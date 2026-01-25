@@ -11,13 +11,16 @@ SCRIPT: 01_capture_audit.sql
 GOAL: Identify data gaps causing revenue leakage.
 */
 
--- High-level overview of missing contact info per advisor
 SELECT 
     advisor_name,
     COUNT(*) AS total_appointments,
     COUNT(*) FILTER (WHERE customer_phone IS NULL) AS missing_contact_info,
-    -- Financial Impact: Assuming $120 USD average service ticket
-    (COUNT(*) FILTER (WHERE customer_phone IS NULL) * 120) AS potential_revenue_loss_usd
+    -- Efficiency KPI: Percentage of records with missing info
+    ROUND((COUNT(*) FILTER (WHERE customer_phone IS NULL)::numeric / COUNT(*)) * 100, 2) AS leakage_rate_pct,
+    -- Financial Projections (Ticket: $120 USD)
+    (COUNT(*) * 120) AS projected_potential_revenue,
+    (COUNT(*) FILTER (WHERE customer_phone IS NOT NULL) * 120) AS realized_revenue,
+    (COUNT(*) FILTER (WHERE customer_phone IS NULL) * 120) AS potential_loss_usd
 FROM citas_honda
 GROUP BY 1
-ORDER BY potential_revenue_loss_usd DESC;
+ORDER BY potential_loss_usd DESC;
