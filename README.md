@@ -46,7 +46,7 @@ Recommendation: Shift "Express Services" (Oil/Filters) specifically to afternoon
 🛠️ Repository Structure
 This project moves from data profiling to actionable financial logic using PostgreSQL.
 
-F| File | Description | Business Logic |
+| File | Description | Business Logic |
 | :--- | :--- | :--- |
 | **00_data_quality_checks.sql** | Data Audit | Validates data integrity (dates, duplicates, phone formats). |
 | **01_capture_audit.sql** | Leakage Diagnosis | Calculates financial loss per advisor due to missing data. |
