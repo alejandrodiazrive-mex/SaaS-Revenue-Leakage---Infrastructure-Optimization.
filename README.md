@@ -1,26 +1,53 @@
-Honda Service Center: Operational Efficiency & Revenue Recovery Analysis
-📊 SQL-Based Financial Audit & Capacity Optimization
-Author: Alejandro Diaz Role: Data Analyst | Business Intelligence Focus Location: Mexico (Open for Remote Work)
+# Business Analysis Simulation: Churn Risk & Capacity Optimization 📊
+### *Previously: Honda Service Center Operational Audit*
 
-🚀 Executive Summary
-This project analyzes 4 years of historical service data (12,286 records) from a Honda Dealership to identify operational inefficiencies and revenue leakage.
+[![Business Context: SaaS/Service Platform Simulation](https://img.shields.io/badge/Business_Context-SaaS_/_Service_Platform_Simulation-blue)](https://github.com/alejandro-diaz/portfolio)
+[![SQL](https://img.shields.io/badge/Tech-PostgreSQL-orange)]()
+[![Focus](https://img.shields.io/badge/Focus-Revenue_Recovery_%26_Retention-green)]()
 
-The analysis reveals that 35% of the customer base lacks valid contact information, creating a significant barrier to retention. Through financial modeling, I estimated a total revenue exposure of ~$526k USD.
+## 🎯 Simulation Context: Translating Operational Data into SaaS Business Insights
 
-Using a scenario-based approach, this repository provides a SQL-driven strategy to potentially recover $79k USD (Realistic Scenario) by optimizing data capture and repurposing underutilized afternoon shifts.
+**This project analyzes a real-world service business dataset (Honda Dealership), but the analytical framework is directly applicable to B2B SaaS platforms facing:**
+- **User Churn:** Identifying accounts at risk due to incomplete onboarding data (missing contact info).
+- **Infrastructure Efficiency:** Analyzing "Dead Cloud Spend" by mapping underutilized capacity (afternoon shifts) vs. fixed costs.
+- **Revenue Leakage:** Quantifying lost ARR (Annual Recurring Revenue) opportunities.
 
-🛡️ Data Quality Audit & Constraints
-Before the financial analysis, a rigorous data integrity check was performed (see 00_data_quality_checks.sql).
+### 🔄 The "Translator" Guide: How to Read This Repo
+To view this project through a SaaS lens, use the following mapping:
 
-| Audit Check | Status | Impact / Decision |
+| Service Business Concept (Raw Data) | SaaS Business Equivalent (The Insight) | Why It Matters |
 | :--- | :--- | :--- |
-| **Temporal Consistency** | ✅ Pass | 0 records found outside the analysis scope (2022-2026). |
-| **Negative Billable Hours** | ⚠️ Minor Warning | 3 records found with <= 0 hours. Excluded from financial sums. |
-| **Invalid Phone Formats** | ❌ **High Risk** | **498 records** identified with invalid lengths (<10 digits), in addition to NULL values. |
-| **Duplicate Candidates** | ℹ️ Constraint | Multiple same-model entries per day. **Decision:** Treated as distinct services due to lack of VIN. |
+| **Missing Phone Numbers** | **Incomplete User Profile / Unverified Email** | Prevents re-engagement campaigns, increasing Churn Risk. |
+| **Service Appointment** | **User Login / Active Session** | Measures Daily/Monthly Active Users (DAU/MAU). |
+| **Advisor Name** | **Account Manager / CSM** | Evaluates performance of the Customer Success team. |
+| **Morning vs. Afternoon Shift** | **Server Load Peaks vs. Idle Time** | Optimizing infrastructure costs (AWS/Azure) during low-traffic periods. |
+| **Car Models (CR-V, HR-V)** | **Subscription Tiers (Enterprise, Pro)** | Identifies High-LTV (Lifetime Value) segments to prioritize. |
 
-💰 Financial Impact & Recovery Scenarios
-Instead of assuming a total loss, I modeled three recovery scenarios based on a standard ticket of $120 USD applied to the 4,385 contactable-at-risk clients.
+---
+
+## 🚀 Executive Summary (The Results)
+
+This project analyzes **4 years of historical data (12,286 records)** to identify operational inefficiencies and revenue leakage.
+
+* **The Problem:** The analysis reveals that **35% of the customer base** lacks valid contact information, creating a significant barrier to retention (The "Ghost User" Phenomenon).
+* **The Financial Impact:** Through financial modeling, I estimated a total revenue exposure of **~$526k USD**.
+* **The Solution:** Using a scenario-based approach, this repository provides a SQL-driven strategy to potentially **recover $79k USD (Realistic Scenario)** by optimizing data capture and repurposing underutilized capacity.
+
+## 🛠️ Repository Structure & Business Logic
+
+This project moves from data profiling to actionable financial logic using PostgreSQL.
+
+| File | Business Logic (SaaS & Ops) |
+| :--- | :--- |
+| **00_data_quality_checks.sql** | **Data Integrity Audit:** Validates data quality before analysis (handling NULLs, duplicates, and impossible dates). |
+| **01_capture_audit.sql** | **Revenue Leakage Diagnosis:** Calculates financial loss per Account Manager due to missing user data. |
+| **02_operational_capacity.sql** | **Infrastructure/Cost Analysis:** Segments usage times to identify "Dead Rent" (or Dead Cloud Spend). |
+| **03_product_mix_analysis.sql** | **Pareto Analysis:** Identifies "Star Tiers" (High LTV users) using `RANK()` functions. |
+| **04_strategic_retention.sql** | **Win-Back Strategy:** Generates actionable lists of high-value users inactive for >180 days. |
+| **05_scenario_analysis.sql** | **Financial Modeling:** Projects revenue recovery scenarios (Optimistic, Realistic, Pessimistic). |
+
+## 💰 Financial Impact & Recovery Scenarios
+Instead of assuming a total loss, I modeled three recovery scenarios based on a standard ticket (or ARPU) of $120 USD applied to the 4,385 contactable-at-risk clients.
 
 | Scenario | Recovery Rate | Estimated Revenue Recovery (USD) |
 | :--- | :--- | :--- |
@@ -28,53 +55,11 @@ Instead of assuming a total loss, I modeled three recovery scenarios based on a 
 | **Realistic** | 15% | $78,930.00 |
 | **Optimistic** | 30% | $157,860.00 |
 
-Note: Projections are based on historical service frequency and standard pricing proxies.
+## 💻 Technical Stack
+* **SQL (PostgreSQL):** Advanced aggregation, Window Functions (`RANK`), CTEs, `CASE WHEN` logic.
+* **Data Cleaning:** Handling NULL values, regex for phone validation, and string normalization (`ILIKE`).
+* **Business Intelligence:** KPI Definition (Churn Risk, Revenue Leakage, Utilization Rate).
 
-🔑 Key Operational Findings
-1. The "Ghost Client" Phenomenon
-Insight: 1,576 unique customers have no registered phone number, and another ~500 have invalid numbers.
-
-Impact: The CRM cannot trigger automatic service reminders for these clients, directly increasing churn risk in the CR-V and HR-V segments (our most valuable assets).
-
-2. "Dead Rent" & Capacity Utilization
-Insight: The workshop operates at High Saturation before 12:00 PM but drops to <10% utilization in the afternoon.
-
-Financial Risk: Fixed costs (Rent/Staff) remain constant while revenue generation plummets after lunch.
-
-Recommendation: Shift "Express Services" (Oil/Filters) specifically to afternoon slots to balance the daily load.
-
-🛠️ Repository Structure
-This project moves from data profiling to actionable financial logic using PostgreSQL.
-
-| File | Description | Business Logic |
-| :--- | :--- | :--- |
-| **00_data_quality_checks.sql** | Data Audit | Validates data integrity (dates, duplicates, phone formats). |
-| **01_capture_audit.sql** | Leakage Diagnosis | Calculates financial loss per advisor due to missing data. |
-| **02_operational_capacity.sql** | Efficiency Analysis | Segments shifts to identify idle capacity ("Dead Rent"). |
-| **03_product_mix_analysis.sql** | Market Fit | Identifies "Star Models" (CR-V & HR-V) using RANK(). |
-| **04_strategic_retention.sql** | Actionable List | High-value customers inactive for >180 days. |
-| **05_scenario_analysis.sql** | Financial Modeling | Revenue recovery projections (5%, 15%, 30%). |
-
-⚖️ Proposed Strategic Actions
-Based on the data, the following trade-offs are recommended for management review:
-
-Volume vs. Data Quality: Advisors prioritizing speed are skipping data entry.
-
-Action: Link monthly bonuses to a 90% Contactability Rate.
-
-Agility vs. Analytics: The use of "Free Text" fields speeds up reception but hinders analysis.
-
-Action: Implement standard drop-down service codes in the DMS.
-
-Capacity Balancing:
-
-Action: Offer a 10% discount for customers willing to book appointments after 2:00 PM to reduce morning congestion.
-
-💻 Technical Stack
-SQL (PostgreSQL): Advanced aggregation, Window Functions (RANK), CTEs, CASE WHEN logic.
-
-Data Cleaning: Handling NULL values, regex for phone validation, and string normalization (ILIKE).
-
-Business Intelligence: KPI Definition (Churn Risk, Revenue Leakage, Utilization Rate).
-
-"Turning raw service logs into actionable business intelligence."
+---
+*Author: Alejandro Diaz | Data Analyst & Business Intelligence Focus*
+*"Turning raw service logs into actionable business intelligence."*
