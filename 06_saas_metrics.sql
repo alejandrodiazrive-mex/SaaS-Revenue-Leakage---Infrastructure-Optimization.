@@ -1,22 +1,28 @@
-/* SCRIPT: 06_saas_metrics_calculation.sql
-   OBJECTIVE: Transform activity logs into SaaS North Star Metrics. */
+-- ADD THESE METRICS FOR MAXIMUM IMPACT:
+-- Analyzing Churn (Customer Loss) and its impact on MRR
 
-WITH user_revenue AS (
+WITH churn_analysis AS (
     SELECT 
         car_model AS tier,
-        CASE 
-            WHEN car_model ILIKE '%CR-V%' THEN 499 -- Enterprise Tier
-            WHEN car_model ILIKE '%HR-V%' THEN 149 -- Pro Tier
-            ELSE 49 -- Basic Tier
-        END AS mrr_value
+        COUNT(*) as total_users,
+        -- Users who have been inactive for more than 90 days (Churned)
+        COUNT(*) FILTER (WHERE appointment_date < CURRENT_DATE - INTERVAL '90 days') as churned_users,
+        ROUND(COUNT(*) FILTER (WHERE appointment_date < CURRENT_DATE - INTERVAL '90 days')::numeric / COUNT(*) * 100, 2) as churn_rate_pct
     FROM citas_honda
+    GROUP BY 1
 )
 SELECT 
     tier,
-    SUM(mrr_value) AS total_mrr,
-    COUNT(*) AS total_users,
-    ROUND(AVG(mrr_value), 2) AS ARPU -- Average Revenue Per User
-FROM user_revenue
-GROUP BY 1
-order by total_users desc
+    total_users,
+    churned_users,
+    churn_rate_pct || '%' as churn_rate,
+    -- FINANCIAL IMPACT: MRR Lost Due to Churn
+    (churned_users * CASE 
+            WHEN tier ILIKE '%CR-V%' THEN 499 
+            WHEN tier ILIKE '%HR-V%' THEN 149 
+            ELSE 49 
+        END
+    ) as lost_mrr_per_month_usd
+FROM churn_analysis
+ORDER BY lost_mrr_per_month_usd DESC
 limit 20;
