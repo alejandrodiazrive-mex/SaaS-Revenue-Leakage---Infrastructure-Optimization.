@@ -1,66 +1,64 @@
-# Business Analysis Simulation: Churn Risk & Capacity Optimization 📊
-### *Previously: Honda Service Center Operational Audit*
+# SaaS Unit Economics Simulation: Revenue Recovery & Infrastructure Optimization 📊
 
-[![Business Context: SaaS/Service Platform Simulation](https://img.shields.io/badge/Business_Context-SaaS_/_Service_Platform_Simulation-blue)](https://github.com/alejandro-diaz/portfolio)
-[![SQL](https://img.shields.io/badge/Tech-PostgreSQL-orange)]()
-[![Focus](https://img.shields.io/badge/Focus-Revenue_Recovery_%26_Retention-green)]()
+![SQL](https://img.shields.io/badge/Language-PostgreSQL-blue) ![Focus](https://img.shields.io/badge/Focus-Financial_Modeling-green) ![Status](https://img.shields.io/badge/Status-Completed-success)
 
-## 🎯 Simulation Context: Translating Operational Data into SaaS Business Insights
-
-**This project analyzes a real-world service business dataset (Honda Dealership), but the analytical framework is directly applicable to B2B SaaS platforms facing:**
-- **User Churn:** Identifying accounts at risk due to incomplete onboarding data (missing contact info).
-- **Infrastructure Efficiency:** Analyzing "Dead Cloud Spend" by mapping underutilized capacity (afternoon shifts) vs. fixed costs.
-- **Revenue Leakage:** Quantifying lost ARR (Annual Recurring Revenue) opportunities.
-
-### 🔄 The "Translator" Guide: How to Read This Repo
-To view this project through a SaaS lens, use the following mapping:
-
-| Service Business Concept (Raw Data) | SaaS Business Equivalent (The Insight) | Why It Matters |
-| :--- | :--- | :--- |
-| **Missing Phone Numbers** | **Incomplete User Profile / Unverified Email** | Prevents re-engagement campaigns, increasing Churn Risk. |
-| **Service Appointment** | **User Login / Active Session** | Measures Daily/Monthly Active Users (DAU/MAU). |
-| **Advisor Name** | **Account Manager / CSM** | Evaluates performance of the Customer Success team. |
-| **Morning vs. Afternoon Shift** | **Server Load Peaks vs. Idle Time** | Optimizing infrastructure costs (AWS/Azure) during low-traffic periods. |
-| **Car Models (CR-V, HR-V)** | **Subscription Tiers (Enterprise, Pro)** | Identifies High-LTV (Lifetime Value) segments to prioritize. |
+## 🚀 Executive Summary
+**The Problem:** Identifying "Revenue Leakage" in a B2B service platform (Honda Dealership) where 35% of the user base lacked valid contact data, preventing re-engagement.
+**The Solution:** I built a SQL-based simulation to treat operational logs as SaaS activity data, modeling Churn Risk and Infrastructure Efficiency.
+**The Impact:** Modeled a **$79,830 USD** annual revenue recovery opportunity (Realistic Scenario) by implementing a "Win-Back" strategy for high-LTV accounts.
 
 ---
 
-## 🚀 Executive Summary (The Results)
+## 🔄 The "Translator" Layer (Why this matters for SaaS)
+This project analyzes real-world operational data through the lens of **B2B SaaS Metrics**. I translated physical service events into digital subscription concepts to demonstrate business acumen.
 
-This project analyzes **4 years of historical data (12,286 records)** to identify operational inefficiencies and revenue leakage.
-
-* **The Problem:** The analysis reveals that **35% of the customer base** lacks valid contact information, creating a significant barrier to retention (The "Ghost User" Phenomenon).
-* **The Financial Impact:** Through financial modeling, I estimated a total revenue exposure of **~$526k USD**.
-* **The Solution:** Using a scenario-based approach, this repository provides a SQL-driven strategy to potentially **recover $79k USD (Realistic Scenario)** by optimizing data capture and repurposing underutilized capacity.
-
-## 🛠️ Repository Structure & Business Logic
-
-This project moves from data profiling to actionable financial logic using PostgreSQL.
-
-| File | Business Logic (SaaS & Ops) |
-| :--- | :--- |
-| **00_data_quality_checks.sql** | **Data Integrity Audit:** Validates data quality before analysis (handling NULLs, duplicates, and impossible dates). |
-| **01_capture_audit.sql** | **Revenue Leakage Diagnosis:** Calculates financial loss per Account Manager due to missing user data. |
-| **02_operational_capacity.sql** | **Infrastructure/Cost Analysis:** Segments usage times to identify "Dead Rent" (or Dead Cloud Spend). |
-| **03_product_mix_analysis.sql** | **Pareto Analysis:** Identifies "Star Tiers" (High LTV users) using `RANK()` functions. |
-| **04_strategic_retention.sql** | **Win-Back Strategy:** Generates actionable lists of high-value users inactive for >180 days. |
-| **05_scenario_analysis.sql** | **Financial Modeling:** Projects revenue recovery scenarios (Optimistic, Realistic, Pessimistic). |
-| **06_saas_metrics_calculation.sql** | **SaaS Metrics Simulation** Transforms raw activity into ARPU, MRR, and segment-based revenue tiers. |
-
-## 💰 Financial Impact & Recovery Scenarios
-Instead of assuming a total loss, I modeled three recovery scenarios based on a standard ticket (or ARPU) of $120 USD applied to the 4,385 contactable-at-risk clients.
-
-| Scenario | Recovery Rate | Estimated Revenue Recovery (USD) |
+| Operational Concept (Raw Data) | SaaS Equivalent (The Insight) | Business Application |
 | :--- | :--- | :--- |
-| **Pessimistic** | 5% | $26,310.00 |
-| **Realistic** | 15% | $78,930.00 |
-| **Optimistic** | 30% | $157,860.00 |
-
-## 💻 Technical Stack
-* **SQL (PostgreSQL):** Advanced aggregation, Window Functions (`RANK`), CTEs, `CASE WHEN` logic.
-* **Data Cleaning:** Handling NULL values, regex for phone validation, and string normalization (`ILIKE`).
-* **Business Intelligence:** KPI Definition (Churn Risk, Revenue Leakage, Utilization Rate).
+| **Missing Phone Number** | **Incomplete User Profile** | Prevents re-engagement & increases Churn Risk. |
+| **Service Appointment** | **Active User Session** | Measuring DAU/MAU (Daily/Monthly Active Users). |
+| **Advisor Name** | **Customer Success Manager (CSM)** | Evaluating Account Manager performance. |
+| **Morning vs. Afternoon Shift** | **Server Load / Cloud Capacity** | Optimizing AWS/Azure fixed costs during idle times. |
+| **Car Models (CR-V, HR-V)** | **Subscription Tiers (Pro, Enterprise)** | Identifying High-LTV segments for upsell. |
 
 ---
-*Author: Alejandro Diaz | Data Analyst & Business Intelligence Focus*
-*"Turning raw service logs into actionable business intelligence."*
+
+## 📂 Repository Structure & Analysis Pipeline
+
+This project follows a strict ETL (Extract, Transform, Load) logic, separating data cleaning from financial analysis.
+
+| File | Type | Business Logic |
+| :--- | :--- | :--- |
+| `00_schema_prep.sql` | **ETL / Prep** | Normalizes Spanish raw columns to English business standards (`asesor` → `advisor_name`). |
+| `01_data_quality_audit.sql` | **Quality** | Validates integrity (filtering impossible dates & negative billable hours) to ensure accurate reporting. |
+| `02_revenue_leakage.sql` | **Revenue** | Quantifies the "Cost of Bad Data". Calculates total money left on the table due to "Ghost Users". |
+| `03_operational_capacity.sql`| **Ops / Cost** | Analyzes "Dead Cloud Spend" (Dead Rent). Identifies 40% idle capacity in afternoon shifts. |
+| `04_product_mix.sql` | **Strategy** | Uses **Pareto Analysis** (`RANK()`) to identify the top 2 "Star Tiers" driving 80% of volume. |
+| `05_retention_strategy.sql` | **Action** | Generates a specific SQL list of High-Value customers at risk of churning (>180 days inactive). |
+| `06_scenario_modeling.sql` | **Financial** | Projects recovery outcomes: **Pessimistic (5%)**, **Realistic (15%)**, and **Optimistic (30%)**. |
+| `07_saas_metrics.sql` | **Simulation** | **North Star Metrics**: Calculates Inactivity Rates (Churn Proxy) and Revenue Exposure per Tier. |
+
+---
+
+## 💰 Key Findings & Financial Scenarios
+
+Instead of assuming a "total loss," I modeled three recovery scenarios based on a standard ARPU (Average Revenue Per User) of **$120 USD**.
+
+### 📉 Scenario Analysis (Recovery Potential)
+| Scenario | Recovery Rate | Estimated Revenue Impact | Strategy Required |
+| :--- | :--- | :--- | :--- |
+| **Pessimistic** | 5% | **$26,310** | Passive Email Automation |
+| **Realistic** | **15%** | **$78,930** | SMS + Dedicated CSM Outreach |
+| **Optimistic** | 30% | **$157,860** | Full Account Management Intervention |
+
+---
+
+## 🛠️ Technical Stack & Skills Demonstrated
+* **Advanced SQL**: Window Functions (`RANK()`, `OVER`), CTEs (`WITH`), Conditional Aggregation (`FILTER`), and `CASE WHEN` logic.
+* **Data Cleaning**: Handling NULLs, string normalization, and regex-like filtering.
+* **Business Intelligence**: translating raw logs into actionable KPIs (Churn Rate, Utilization %, ARPU).
+* **Financial Modeling**: Creating hypothetical revenue scenarios based on data evidence.
+
+---
+
+> *Author: Alejandro Diaz | Data Analyst*
+> *"Turning raw operational logs into actionable business intelligence."*
