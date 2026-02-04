@@ -62,3 +62,6 @@ Instead of assuming a "total loss," I modeled three recovery scenarios based on 
 
 > *Author: Alejandro Diaz | Data Analyst*
 > *"Turning raw operational logs into actionable business intelligence."*
+
+## ℹ️ Dataset Note
+The original dataset used for this analysis contains sensitive business information (PII) and has been excluded from this public repository to comply with data privacy standards. The SQL logic provided is designed to be executed on standardized service log schemas.
