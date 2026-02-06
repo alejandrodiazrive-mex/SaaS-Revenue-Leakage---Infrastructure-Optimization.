@@ -9,16 +9,16 @@
 
 ---
 
-## 🔄 The "Translator" Layer (Why this matters for SaaS)
-This project analyzes real-world operational data through the lens of **B2B SaaS Metrics**. I translated physical service events into digital subscription concepts to demonstrate business acumen.
+## 🔄 The "Translator" Layer (The Business Logic)
+I translated physical service events into digital subscription concepts to demonstrate business acumen.
 
-| Operational Concept (Raw Data) | SaaS Equivalent (The Insight) | Business Application |
+| Operational Concept | SaaS Equivalent | Business Application |
 | :--- | :--- | :--- |
 | **Missing Phone Number** | **Incomplete User Profile** | Prevents re-engagement & increases Churn Risk. |
-| **Service Appointment** | **Active User Session** | Measuring DAU/MAU (Daily/Monthly Active Users). |
+| **Service Appointment** | **Active User Session** | Measuring DAU/MAU (Engagement). |
 | **Advisor Name** | **Customer Success Manager (CSM)** | Evaluating Account Manager performance. |
 | **Morning vs. Afternoon Shift** | **Server Load / Cloud Capacity** | Optimizing AWS/Azure fixed costs during idle times. |
-| **Car Models (CR-V, HR-V)** | **Subscription Tiers (Pro, Enterprise)** | Identifying High-LTV segments for upsell. |
+| **Car Models (CR-V, HR-V)** | **Subscription Tiers** | Identifying High-LTV segments for upsell. |
 
 ---
 
@@ -28,20 +28,30 @@ This project follows a strict ETL (Extract, Transform, Load) logic, separating d
 
 | File | Type | Business Logic |
 | :--- | :--- | :--- |
-| `00_schema_prep.sql` | **ETL / Prep** | Normalizes Spanish raw columns to English business standards (`asesor` → `advisor_name`). |
-| `01_data_quality_audit.sql` | **Quality** | Validates integrity (filtering impossible dates & negative billable hours) to ensure accurate reporting. |
+| `00_schema_prep.sql` & `01_data_quality_audit.sql` | **ETL & Validation** | Normalizes data and filters "impossible" entries (negative hours) to ensure a single source of truth. |
 | `02_revenue_leakage.sql` | **Revenue** | Quantifies the "Cost of Bad Data". Calculates total money left on the table due to "Ghost Users". |
-| `03_operational_capacity.sql`| **Ops / Cost** | Analyzes "Dead Cloud Spend" (Dead Rent). Identifies 40% idle capacity in afternoon shifts. |
-| `04_product_mix.sql` | **Strategy** | Uses **Pareto Analysis** (`RANK()`) to identify the top 2 "Star Tiers" driving 80% of volume. |
-| `05_retention_strategy.sql` | **Action** | Generates a specific SQL list of High-Value customers at risk of churning (>180 days inactive). |
-| `06_scenario_modeling.sql` | **Financial** | Projects recovery outcomes: **Pessimistic (5%)**, **Realistic (15%)**, and **Optimistic (30%)**. |
+| `03_operational_capacity.sql`| **Ops / Cost** | Identifies 40% idle capacity in afternoon shifts—equivalent to "Dead Rent" in cloud infrastructure. |
+| `04_product_mix.sql` | **Pareto Strategy** | Uses RANK() to identify the top 2 "Star Tiers" driving 80% of volume. |
+| `05_retention_strategy.sql` | **Actionable Churn Logic** |Segments users inactive for >180 days. (180 days chosen to avoid seasonal false positives). |
+| `06_scenario_modeling.sql` | **Financial Projections** | Uses conservative ARPU ($120) to compare recovery outcomes. |
 | `07_saas_metrics.sql` | **Simulation** | **North Star Metrics**: Calculates Inactivity Rates (Churn Proxy) and Revenue Exposure per Tier. |
+
+---
+
+## ⚖️ Strategic Assumptions & Trade-offs
+This analysis favors explainable, conservative assumptions over aggressive forecasting:
+
+**Churn Proxy (180 days)**: Selected to minimize false positives caused by seasonal service patterns. Shorter windows improve recall but reduce actionability.
+
+**ARPU ($120 USD)**: Used as a stable reference point to compare orders of magnitude between scenarios, not as a rigid forecast.
+
+**Scope**: Focuses on revenue recovery and utilization efficiency; acquisition costs (CAC) are intentionally out of scope for this simulation.
 
 ---
 
 ## 💰 Key Findings & Financial Scenarios
 
-Instead of assuming a "total loss," I modeled three recovery scenarios based on a standard ARPU (Average Revenue Per User) of **$120 USD**.
+Instead of assuming a "total loss", this analysis models recovery scenarios using a $120 USD ARPU (Conservative Estimate). Note: The goal isn't exact precision, but to compare orders of magnitude between scenarios.
 
 ### 📉 Scenario Analysis (Recovery Potential)
 | Scenario | Recovery Rate | Estimated Revenue Impact | Strategy Required |
@@ -50,14 +60,30 @@ Instead of assuming a "total loss," I modeled three recovery scenarios based on 
 | **Realistic** | **15%** | **$78,930** | SMS + Dedicated CSM Outreach |
 | **Optimistic** | 30% | **$157,860** | Full Account Management Intervention |
 
+## 🧭 Stakeholder Impact (How to use this)
+RevOps / Finance: Prioritize win-back campaigns based on expected ROI.
+
+Customer Success: Focus outreach on high-LTV accounts with the highest recovery upside.
+
+Leadership: Decide if recovery efforts justify hiring dedicated headcount (CSMs).
+
+“The objective is to enable decision-making, not to maximize metric complexity.”
+
 ---
 
-## 🛠️ Technical Stack & Skills Demonstrated
-* **Advanced SQL**: Window Functions (`RANK()`, `OVER`), CTEs (`WITH`), Conditional Aggregation (`FILTER`), and `CASE WHEN` logic.
-* **Data Cleaning**: Handling NULLs, string normalization, and regex-like filtering.
-* **Business Intelligence**: translating raw logs into actionable KPIs (Churn Rate, Utilization %, ARPU).
-* **Financial Modeling**: Creating hypothetical revenue scenarios based on data evidence.
+## 🚧 Limitations & Next Steps
+Limitations: Churn is inferred from inactivity, not explicit cancellations. Revenue impact assumes uniform ARPU across tiers.
 
+Next Steps: Validate churn thresholds with historical retention curves and incorporate "Cost of Intervention" to model net ROI.
+
+---
+
+## 🛠️ Technical Stack
+Production-oriented SQL: Window Functions (RANK(), OVER), CTEs, and Conditional Aggregation.
+
+Business Intelligence: Translating raw logs into actionable KPIs (Churn Proxy, Utilization %, ARPU).
+
+Financial Modeling: Scenario analysis based on data-driven evidence.
 ---
 
 > *Author: Alejandro Diaz | Data Analyst*
