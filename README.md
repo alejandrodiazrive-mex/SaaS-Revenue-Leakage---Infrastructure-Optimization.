@@ -39,7 +39,7 @@ graph TD
     C -->|Gap Analysis| D[Churn Risk Identification]
     D -->|Financial Modeling| E[Revenue Recovery Scenarios]
     E -->|Strategic Insight| F[Leadership Decision Making]
-
+```
 
 
 ## 📂 Repository Structure & Analysis Pipeline
