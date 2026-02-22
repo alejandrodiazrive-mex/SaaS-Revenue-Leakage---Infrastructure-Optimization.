@@ -1,21 +1,19 @@
-/* 
-SCRIPT: 08_saas_mrr_analysis.sql
+/*
+PROJECT: SaaS Metrics Simulation
+FOCUS: Monthly MRR evolution and account churn trend
 
-BUSINESS QUESTION:
-How healthy is the SaaS business over time in terms of MRR and churn?
-
-MODEL NOTES:
-- Each unique `referenc` is treated as an account proxy.
-- MRR is simulated using a fixed ARPU of $120 per active account.
-- Negative churn values indicate net account growth.
+ASSUMPTIONS:
+- Each distinct `referenc` represents one customer account.
+- MRR is estimated using a flat ARPU of $120.
+- Churn is inferred from month-over-month account variation.
 */
 
 WITH monthly_accounts AS (
     SELECT
-        -- Se usa 'appoinment_date' tal cual aparece en tu dataset
+        -- Using appointment_date as the activity timestamp
         DATE_TRUNC('month', appointment_date) AS month,
         COUNT(DISTINCT referenc) AS active_accounts
-    FROM citas_honda -- Nombre real de la tabla
+    FROM citas_honda
     WHERE referenc IS NOT NULL
     GROUP BY 1
 ),
@@ -43,14 +41,6 @@ churn_metrics AS (
             )
         END AS logo_churn_rate_pct,
         CASE 
-            WHEN prev_active_accounts IS NULL THEN 0
-            ELSE ROUND(
-                ((prev_active_accounts - active_accounts)::NUMERIC 
-                / NULLIF(prev_active_accounts, 0)) * 100, 
-                2
-            )
-        END AS revenue_churn_rate_pct,
-        CASE 
             WHEN (prev_active_accounts - active_accounts) > 0 
             THEN 'Net Churn'
             ELSE 'Net Growth'
@@ -61,7 +51,10 @@ churn_metrics AS (
 SELECT *
 FROM churn_metrics
 ORDER BY month;
--- INTERPRETATION NOTE:
--- Negative churn rates indicate net account growth.
--- This behavior is expected in activity-based SaaS simulations
--- where acquisition is inferred from first observed usage.
+
+/*
+NOTE:
+Negative churn values reflect net account expansion.
+Since acquisition is inferred from first observed activity,
+growth periods may produce apparent negative churn.
+*/
