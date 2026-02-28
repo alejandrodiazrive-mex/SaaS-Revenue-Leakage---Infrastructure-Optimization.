@@ -1,105 +1,71 @@
-# SaaS Unit Economics Simulation: Revenue Recovery & Infrastructure Optimization 📊
+## 📊 SaaS Unit Economics & Modern Data Stack Migration
 
-![SQL](https://img.shields.io/badge/Language-PostgreSQL-blue) ![Focus](https://img.shields.io/badge/Focus-Financial_Modeling-green) ![Status](https://img.shields.io/badge/Status-Completed-success)
+![Analytics Engineering](https://img.shields.io/badge/Role-Analytics_Engineer-purple) ![dbt](https://img.shields.io/badge/Tool-dbt_Core-orange) ![SQL](https://img.shields.io/badge/Language-SQL-blue) ![Status](https://img.shields.io/badge/Status-Completed-success)
 
-## 🚀 Executive Summary
-**The Problem:** Identifying "Revenue Leakage" in a B2B service platform (Honda Dealership) where 35% of the user base lacked valid contact data, preventing re-engagement.
-**The Solution:** I built a SQL-based simulation to treat operational logs as SaaS activity data, modeling Churn Risk and Infrastructure Efficiency.
-**The Impact:** Modeled a **$79,830 USD** annual revenue recovery opportunity (Realistic Scenario) by implementing a "Win-Back" strategy for high-LTV accounts.
- 
-## 🚀 Strategic Impact & Skills
+---
+## 🎯 Executive Summary
+**The Problem:** A legacy operational reporting system (Honda Dealership) was generating isolated SQL scripts, lacking version control, data quality tests, and scalability. Furthermore, "Ghost Users" (missing contact info) were causing an estimated **$79,830 USD** in annual revenue leakage.
 
-**Target Roles:** Data Analyst | Junior Analytics Engineer | RevOps Analyst | SaaS Operations
-
-**Core Competencies Demonstrated:**
-* **Business-First SQL:** Window Functions (`RANK()`), CTEs, and conditional logic used for **Production-oriented analysis**.
-* **SaaS Metrics Modeling:** Translation of operational logs into **MRR simulations**, **Churn Proxies**, and **ARPU**.
-* **Financial Strategy:** Scenario modeling and **Pareto Analysis** to drive leadership decision-making.
+**The Solution:** I migrated the ad-hoc SQL analysis into a robust **Modern Data Stack pipeline using dbt Core**. This transformation applies software engineering best practices to data, modeling physical service events into digital SaaS metrics (MRR, Churn, and LTV).
 
 ---
 
-## 🔄 The "Translator" Layer (The Business Logic)
-I translated physical service events into digital subscription concepts to demonstrate business acumen.
+## 🏗️ Analytics Architecture (The dbt Pipeline)
 
-| Operational Concept | SaaS Equivalent | Business Application |
-| :--- | :--- | :--- |
-| **Missing Phone Number** | **Incomplete User Profile** | Prevents re-engagement & increases Churn Risk. |
-| **Service Appointment** | **Active User Session** | Measuring DAU/MAU (Engagement). |
-| **Advisor Name** | **Customer Success Manager (CSM)** | Evaluating Account Manager performance. |
-| **Morning vs. Afternoon Shift** | **Server Load / Cloud Capacity** | Optimizing AWS/Azure fixed costs during idle times. |
-| **Car Models (CR-V, HR-V)** | **Subscription Tiers** | Identifying High-LTV segments for upsell. |
+This repository demonstrates the transition from isolated scripts to a production-grade DAG (Directed Acyclic Graph).
 
-
-
-## 🧭 Project Workflow
 ```mermaid
 graph TD
-    A[Raw Operational Logs] -->|Cleaning & ETL| B[Refined Business Events]
-    B -->|User Mapping| C[Activity Sessions]
-    C -->|Gap Analysis| D[Churn Risk Identification]
-    D -->|Financial Modeling| E[Revenue Recovery Scenarios]
-    E -->|Strategic Insight| F[Leadership Decision Making]
+    A[(Raw Data)] -->|Source| B[Staging Layer]
+    B -->|Tests & Cleaning| C{Business Logic}
+    C -->|Macros & Jinja| D[Intermediate Models]
+    D -->|Aggregations| E[(Curated Marts)]
+    E --> F[Revenue Forecast]
+    E --> G[Win-Back Targets]
 ```
-
-
-## 📂 Repository Structure & Analysis Pipeline
-
-This project follows a strict ETL (Extract, Transform, Load) logic, separating data cleaning from financial analysis.
-
-| File | Type | Business Logic |
-| :--- | :--- | :--- |
-| `00_schema_prep.sql` & `01_data_quality_audit.sql` | **ETL & Validation** | Normalizes data and filters "impossible" entries (negative hours) to ensure a single source of truth. |
-| `02_revenue_leakage.sql` | **Revenue** | Quantifies the "Cost of Bad Data". Calculates total money left on the table due to "Ghost Users". |
-| `03_operational_capacity.sql`| **Ops / Cost** | Identifies 40% idle capacity in afternoon shifts—equivalent to "Dead Rent" in cloud infrastructure. |
-| `04_product_mix.sql` | **Pareto Strategy** | Uses RANK() to identify the top 2 "Star Tiers" driving 80% of volume. |
-| `05_retention_strategy.sql` | **Actionable Churn Logic** |Segments users inactive for >180 days. (180 days chosen to avoid seasonal false positives). |
-| `06_scenario_modeling.sql` | **Financial Projections** | Uses conservative ARPU ($120) to compare recovery outcomes. |
-| `07_saas_metrics.sql` | **Simulation** | **North Star Metrics**: Calculates Inactivity Rates (Churn Proxy) and Revenue Exposure per Tier. |
-| `08_saas_mrr_analysis.sql` | **MRR, logo churn, revenue churn** | Simulates core SaaS metrics using activity-based account proxies and highlights net growth vs churn dynamics. |
 ---
-
-## ⚖️ Strategic Assumptions & Trade-offs
-This analysis favors explainable, conservative assumptions over aggressive forecasting:
-
-**Churn Proxy (180 days)**: Selected to minimize false positives caused by seasonal service patterns. Shorter windows improve recall but reduce actionability.
-
-**ARPU ($120 USD)**: Used as a stable reference point to compare orders of magnitude between scenarios, not as a rigid forecast.
-
-**Scope**: Focuses on revenue recovery and utilization efficiency; acquisition costs (CAC) are intentionally out of scope for this simulation.
+## 📂 Repository Structure
+honda_saas_metrics/
+│
+├── models/
+│   ├── staging/
+│   ├── intermediate/
+│   └── marts/
+│
+├── macros/
+└── legacy_analysis/
 
 ---
 
-## 💰 Key Findings & Financial Scenarios
+## 🔄 The "Translator" Layer (SaaS Business Logic)
+Translating physical operations into scalable SaaS metrics to drive Revenue Operations (RevOps).
 
-Instead of assuming a "total loss", this analysis models recovery scenarios using a $120 USD ARPU (Conservative Estimate). Note: The goal isn't exact precision, but to compare orders of magnitude between scenarios.
-
-### 📉 Scenario Analysis (Recovery Potential)
-| Scenario | Recovery Rate | Estimated Revenue Impact | Strategy Required |
-| :--- | :--- | :--- | :--- |
-| **Pessimistic** | 5% | **$26,310** | Passive Email Automation |
-| **Realistic** | **15%** | **$78,930** | SMS + Dedicated CSM Outreach |
-| **Optimistic** | 30% | **$157,860** | Full Account Management Intervention |
-
-## 🧭 Stakeholder Impact (How to use this)
-RevOps / Finance: Prioritize win-back campaigns based on expected ROI.
-
-Customer Success: Focus outreach on high-LTV accounts with the highest recovery upside.
-
-Leadership: Decide if recovery efforts justify hiring dedicated headcount (CSMs).
-
-“The objective is to enable decision-making, not to maximize metric complexity.”
+| Operational Concept      | SaaS Equivalent        | Business Application                                   |
+| Missing Phone Number     | Incomplete Profile     | Prevents re-engagement & increases Churn Risk          |
+| Service Appointment      | Active User Session    | Measuring DAU/MAU (Engagement)                         |
+| Morning vs. Afternoon    | Server Load            | Optimizing fixed costs during idle times               |
+| Car Models               | Subscription Tiers     | Identifying High-LTV segments for upsell               |
 
 ---
 
-## 🚧 Limitations & Next Steps
-Limitations: Churn is inferred from inactivity, not explicit cancellations. Revenue impact assumes uniform ARPU across tiers.
+## 💰 Strategic Output: Revenue Recovery Scenarios
+The fct_revenue_leakage mart calculates recovery potential using a conservative $120 USD ARPU.
 
-Next Steps: Validate churn thresholds with historical retention curves and incorporate "Cost of Intervention" to model net ROI.
+| Scenario      | Recovery Rate | Estimated Revenue Impact | Strategy Required                     |
+| Pessimistic  | 5%           | $26,610                  | Passive Email Automation             |
+| Realistic    | 15%          | $79,830                  | SMS + Dedicated CSM Outreach         |
+| Optimistic   | 30%          | $159,660                 | Full Account Management Intervention |
 
 ---
 
-> *Author: Alejandro Diaz | Data Analyst*
-> *"Turning raw operational logs into actionable business intelligence."*
+## 🧠 Why This Architecture Matters (AE Perspective)
+Incremental Processing: The MRR calculation (fct_mrr_churn.sql) uses dbt's incremental materialization, processing only new data to minimize cloud warehouse compute costs.
 
-## ℹ️ Dataset Note
-The original dataset used for this analysis contains sensitive business information (PII) and has been excluded from this public repository to comply with data privacy standards. The SQL logic provided is designed to be executed on standardized service log schemas.
+Automated Data Quality: The pipeline halts if operational hours are negative or IDs are duplicated, preventing flawed data from reaching financial dashboards.
+
+DRY Code via Macros: Complex CASE WHEN logic for tier valuation is centralized in a Jinja macro, making future business rule changes instant across all downstream models.
+
+---
+
+Author: Alejandro Diaz | Analytics Engineer
+"Bridging the gap between raw operational data and scalable financial strategy."
