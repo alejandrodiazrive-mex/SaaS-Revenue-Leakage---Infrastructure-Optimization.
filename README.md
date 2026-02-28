@@ -26,6 +26,7 @@ graph TD
 ---
 ## 📂 Repository Structure
 
+```text
 honda_saas_metrics/
 │
 ├── models/
@@ -35,6 +36,7 @@ honda_saas_metrics/
 │
 ├── macros/
 └── legacy_analysis/
+```
 
 ---
 
