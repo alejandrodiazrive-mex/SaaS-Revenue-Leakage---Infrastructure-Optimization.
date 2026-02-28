@@ -26,18 +26,15 @@ graph TD
 ---
 ## 📂 Repository Structure
 
-```text
+```bash
 honda_saas_metrics/
-│
 ├── models/
 │   ├── staging/
 │   ├── intermediate/
 │   └── marts/
-│
 ├── macros/
 └── legacy_analysis/
 ```
-
 ---
 
 ## 🔄 The "Translator" Layer (SaaS Business Logic)
