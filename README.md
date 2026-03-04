@@ -50,14 +50,15 @@ Translating physical operations into scalable SaaS metrics to drive Revenue Oper
 ---
 
 ## 💰 Strategic Output: Revenue Recovery Scenarios
-The fct_revenue_leakage mart calculates recovery potential using a conservative $120 USD ARPU.
+The `fct_revenue_leakage` mart calculates recovery potential using a conservative $120 USD ARPU.
 
-| Scenario      | Recovery Rate | Estimated Revenue Impact | Strategy Required                     |
-|--------------|--------------|--------------------------|--------------------------------------|
-| Pessimistic  | 5%           | $26,310                  | Passive Email Automation             |
-| Realistic    | 15%          | $79,830                  | SMS + Dedicated CSM Outreach         |
-| Optimistic   | 30%          | $157,860                 | Full Account Management Intervention |
+| Scenario      | Recovery Rate | Estimated Revenue Impact | Strategy Required                      |
+|---------------|---------------|--------------------------|----------------------------------------|
+| Pessimistic   | 5%            | $29,298                  | Passive Email Automation               |
+| Realistic     | 15%           | $87,894                  | SMS + Dedicated CSM Outreach           |
+| Optimistic    | 30%           | $175,788                 | Full Account Management Intervention   |
 
+> **Note:** Previous legacy SQL scripts estimated ~$79k. However, after implementing dbt data quality tests (filtering out null IDs and negative billable hours at the staging layer), the true realistic recovery potential was validated at **$87,894 USD**.
 
 ---
 
