@@ -62,11 +62,12 @@ The fct_revenue_leakage mart calculates recovery potential using a conservative 
 ---
 
 ## 🧠 Why This Architecture Matters (AE Perspective)
-Incremental Processing: The MRR calculation (fct_mrr_churn.sql) uses dbt's incremental materialization, processing only new data to minimize cloud warehouse compute costs.
 
-Automated Data Quality: The pipeline halts if operational hours are negative or IDs are duplicated, preventing flawed data from reaching financial dashboards.
-
-DRY Code via Macros: Complex CASE WHEN logic for tier valuation is centralized in a Jinja macro, making future business rule changes instant across all downstream models.
+* **CI/CD Pipeline & Passwordless Auth:** Deployed a fully automated GitHub Actions workflow to run `dbt test` and `dbt build` on every push. Authenticated with Google Cloud using **Workload Identity Federation (OIDC)**—zero hardcoded JSON keys, adhering to enterprise security standards.
+* **Incremental Processing:** The MRR calculation (`fct_mrr_churn.sql`) uses dbt's incremental materialization, processing only new data to minimize cloud warehouse compute costs.
+* **Automated Data Quality:** The pipeline features custom SQL tests to halt execution if operational hours are negative or IDs are duplicated, preventing flawed data from reaching financial dashboards.
+* **SCD Type 2 (Snapshots):** Implemented dbt snapshots to track historical changes in user tiers (e.g., upgrading from HR-V to CR-V), preserving the dimensional history.
+* **DRY Code via Macros:** Complex `CASE WHEN` logic for tier valuation is centralized in a Jinja macro, making future business rule changes instant across all downstream models.
 
 ---
 
