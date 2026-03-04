@@ -1,0 +1,43 @@
+name: dbt_continuous_integration
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  dbt_ci:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/411629586923/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'dbt-runner@honda-analytics-2026.iam.gserviceaccount.com'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dbt
+        run: pip install dbt-bigquery
+
+      - name: Run dbt debug
+        run: dbt debug --profiles-dir .
+        working-directory: honda_saas_metrics
+
+      - name: Run dbt test (Quality Check)
+        run: dbt test --profiles-dir .
+        working-directory: honda_saas_metrics
+
+      - name: Run dbt snapshot (History)
+        run: dbt snapshot --profiles-dir .
+        working-directory: honda_saas_metrics

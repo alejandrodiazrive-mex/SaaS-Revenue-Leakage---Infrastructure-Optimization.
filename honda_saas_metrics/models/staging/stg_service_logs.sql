@@ -24,6 +24,8 @@ renamed_and_cleaned AS (
     FROM source
 )
 
+-- Quality filters
 SELECT * FROM renamed_and_cleaned
--- We filter out garbage from the root
 WHERE appointment_date BETWEEN '2020-01-01' AND CURRENT_DATE
+  AND billable_hours > 0
+  AND service_ticket_id IS NOT NULL

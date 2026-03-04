@@ -1,0 +1,13 @@
+honda_saas_metrics:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: honda-analytics-2026
+      dataset: honda_marts
+      location: US
+      threads: 4
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      priority: interactive

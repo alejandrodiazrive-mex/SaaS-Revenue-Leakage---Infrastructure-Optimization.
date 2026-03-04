@@ -2,12 +2,10 @@ WITH shift_stats AS (
     SELECT 
         CASE WHEN EXTRACT(HOUR FROM appointment_time) < 12 THEN 'Morning' ELSE 'Afternoon' END AS shift,
         COUNT(*) AS total_appointments,
-        -- AE logic: We use clean subqueries
-        (COUNT(*)::NUMERIC / NULLIF((SELECT COUNT(*) FROM {{ ref('stg_service_logs') }}), 0) * 100) AS volume_pct
+        (CAST(COUNT(*) AS FLOAT64) / NULLIF((SELECT COUNT(*) FROM {{ ref('stg_service_logs') }}), 0) * 100) AS volume_pct
     FROM {{ ref('stg_service_logs') }}
     GROUP BY 1
 )
-
 SELECT 
     shift,
     total_appointments,

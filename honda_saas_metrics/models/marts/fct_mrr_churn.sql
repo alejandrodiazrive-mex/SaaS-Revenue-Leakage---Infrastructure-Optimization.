@@ -5,14 +5,13 @@
 
 WITH monthly_accounts AS (
     SELECT
-        DATE_TRUNC('month', appointment_date) AS month,
+        DATE_TRUNC(appointment_date, MONTH) AS month,
         COUNT(DISTINCT customer_account_id) AS active_accounts
     FROM {{ ref('stg_service_logs') }}
     WHERE customer_account_id IS NOT NULL
     
-    -- THE MAGIC OF AE: If the model already exists, it only processes new data
     {% if is_incremental() %}
-    AND appointment_date >= (SELECT MAX(month) FROM {{ this }})
+    AND appointment_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)
     {% endif %}
     
     GROUP BY 1
@@ -31,6 +30,6 @@ SELECT
     *,
     CASE 
         WHEN prev_active_accounts IS NULL THEN 0
-        ELSE ROUND(((prev_active_accounts - active_accounts)::NUMERIC / NULLIF(prev_active_accounts, 0)) * 100, 2)
+        ELSE ROUND((CAST((prev_active_accounts - active_accounts) AS FLOAT64) / NULLIF(prev_active_accounts, 0)) * 100, 2)
     END AS logo_churn_rate_pct
 FROM mrr_calculation
