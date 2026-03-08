@@ -2,30 +2,40 @@ WITH source AS (
     SELECT * FROM {{ source('honda_raw', 'citas_honda') }}
 ),
 
-renamed_and_cleaned AS (
+cleaned AS (
     SELECT
-        -- 1. Standardization of Names
-        CAST(referenc AS STRING) AS customer_account_id,
-        CAST(ref_or AS STRING) AS service_ticket_id,
+        CAST(referenc AS STRING) AS service_ticket_id,
+        UPPER(TRIM(nombre)) AS raw_name,
+        CAST(telefono AS STRING) AS raw_phone,
         CAST(fec_cita AS DATE) AS appointment_date,
-        CAST(hora AS TIME) AS appointment_time,
-        asesor AS advisor_name,
         modelo AS car_model,
-        averia AS service_description,
-        CAST(tiempo_horas AS FLOAT64) AS billable_hours,
-        
-        -- 2. Business Logic: Ghost User Detection
-        telefono AS customer_phone,
-        CASE 
-            WHEN telefono IS NULL OR LENGTH(CAST(telefono AS STRING)) < 10 THEN true 
-            ELSE false 
-        END AS is_ghost_user
-
+        asesor AS advisor_name,
+        CAST(tiempo_horas AS FLOAT64) AS billable_hours
     FROM source
+),
+
+identity_logic AS (
+
+SELECT
+*,
+
+(raw_name IS NULL OR raw_name = 'NAN') AS missing_name,
+(raw_phone IS NULL OR raw_phone = 'NAN') AS missing_phone
+
+FROM cleaned
 )
 
--- Quality filters
-SELECT * FROM renamed_and_cleaned
-WHERE appointment_date BETWEEN '2020-01-01' AND CURRENT_DATE
-  AND billable_hours > 0
-  AND service_ticket_id IS NOT NULL
+SELECT
+*,
+
+CASE
+WHEN missing_name AND missing_phone
+THEN 'GHOST_' || service_ticket_id
+ELSE CONCAT(
+COALESCE(raw_name,'UNKNOWN'),
+'_',
+COALESCE(raw_phone,'NO_PHONE')
+)
+END AS customer_account_id
+
+FROM identity_logic
