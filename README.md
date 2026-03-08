@@ -1,29 +1,32 @@
-## 📊 SaaS Unit Economics & Modern Data Stack Migration
+## 🏎️ SaaS Unit Economics & RevOps Migration (dbt Core)
 
-![Analytics Engineering](https://img.shields.io/badge/Role-Analytics_Engineer-purple) ![dbt](https://img.shields.io/badge/Tool-dbt_Core-orange) ![SQL](https://img.shields.io/badge/Language-SQL-blue) ![Status](https://img.shields.io/badge/Status-Completed-success)
+![Analytics Engineering](https://img.shields.io/badge/Role-Analytics_Engineer-purple) ![dbt](https://img.shields.io/badge/Tool-dbt_Core-orange) ![SQL](https://img.shields.io/badge/Language-BigQuery_SQL-blue) ![Status](https://img.shields.io/badge/Status-Production_Ready-success)
 
----
 ## 🎯 Executive Summary
-**The Problem:** A legacy operational reporting system (Honda Dealership) was generating isolated SQL scripts, lacking version control, data quality tests, and scalability. Furthermore, "Ghost Users" (missing contact info) were causing an estimated **$79,830 USD** in annual revenue leakage.
+**The Context:** A traditional operational business (Honda Dealership) was running disconnected, legacy SQL scripts. The goal was to migrate their raw service logs into a **Modern Data Stack (dbt + BigQuery)** to extract SaaS-like metrics (LTV, Churn Proxy, and Operational Efficiency).
 
-**The Solution:** I migrated the ad-hoc SQL analysis into a robust **Modern Data Stack pipeline using dbt Core**. This transformation applies software engineering best practices to data, modeling physical service events into digital SaaS metrics (MRR, Churn, and LTV).
+**The Challenge:** Initial legacy analysis assumed the primary key (`Referenc`) was the Customer ID. During the data auditing phase, I discovered a **critical Data Quality issue**: `Referenc` was actually a *Ticket ID*. This meant the initial churn was falsely showing as 100%.
+
+**The Solution:** I engineered a robust **Identity Resolution** pipeline in the staging layer using a composite key (`Name + Phone`). This unlocked the ability to track true customer recurrence, segment B2B (Fleet) vs. B2C (Retail), and build actionable RevOps and Operational metrics.
 
 ---
 
-## 🏗️ Analytics Architecture (The dbt Pipeline)
+## 🏗️ Analytics Architecture (The dbt DAG)
 
-This repository demonstrates the transition from isolated scripts to a production-grade DAG (Directed Acyclic Graph).
+The project follows dbt best practices, moving data from raw operational logs to analytics-ready marts.
 
 ```mermaid
 graph TD
-    A[(Raw Data)] -->|Source| B[Staging Layer]
-    B -->|Tests & Cleaning| C{Business Logic}
-    C -->|Macros & Jinja| D[Intermediate Models]
-    D -->|Aggregations| E[(Curated Marts)]
-    E --> F[Revenue Forecast]
-    E --> G[Win-Back Targets]
+    A[(Raw Service Logs)] -->|Source| B[stg_service_logs]
+    B -->|Identity Resolution| C{Business Logic}
+    C --> D[dim_customers]
+    C --> E[fct_advisor_performance]
+    D --> F[fct_ltv]
 ```
 ---
+(Run dbt docs generate to view the full interactive lineage graph).
+---
+
 ## 📂 Repository Structure
 
 ```bash
@@ -60,6 +63,32 @@ The `fct_revenue_leakage` mart calculates recovery potential using a conservativ
 
 > **Note:** Previous legacy SQL scripts estimated ~$79k. However, after implementing dbt data quality tests (filtering out null IDs and negative billable hours at the staging layer), the true realistic recovery potential was validated at **$87,894 USD**.
 
+---
+## 1. Identity Resolution & Data Quality (Staging Layer)
+Raw data contained missing phones and homonyms. The stg_service_logs model standardizes identities while safely handling "Ghost Users" (missing data) to prevent false aggregations.
+
+-- Identity Resolution Snippet
+*CASE
+    WHEN missing_name AND missing_phone THEN 'GHOST_' || service_ticket_id
+    ELSE CONCAT(COALESCE(raw_name,'UNKNOWN'), '_', COALESCE(raw_phone,'NO_PHONE'))
+END AS customer_account_id*
+---
+## 2. Operational Intelligence (Advisor Performance)
+Instead of just counting tickets, I built an Efficiency & Outlier Detection model (fct_advisor_performance).
+
+Labor Efficiency (Upsell Proxy): Calculates avg_hours_per_ticket to identify which advisors are selling complex repairs vs. just doing high-volume, quick lube jobs.
+
+Anomaly Detection (Z-Score): Uses Window Functions (AVG & STDDEV partitioned by advisor) to flag statistically impossible ticket durations (Z-Score > 3).
+
+---
+## 3. Lifetime Value & Customer Recurrence (Marts)
+The dim_customers and fct_ltv models transform transactional tickets into a Customer-Centric Star Schema.
+
+Maps first_service_date and last_service_date.
+
+Creates an is_active boolean flag based on a 90-day recency threshold.
+
+Calculates total_lifetime_hours to drive LTV forecasting.
 ---
 
 ## 🧠 Why This Architecture Matters (AE Perspective)
