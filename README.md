@@ -67,11 +67,13 @@ The `fct_revenue_leakage` mart calculates recovery potential using a conservativ
 ## 1. Identity Resolution & Data Quality (Staging Layer)
 Raw data contained missing phones and homonyms. The stg_service_logs model standardizes identities while safely handling "Ghost Users" (missing data) to prevent false aggregations.
 
+```sql
 -- Identity Resolution Snippet
-*CASE
+CASE
     WHEN missing_name AND missing_phone THEN 'GHOST_' || service_ticket_id
     ELSE CONCAT(COALESCE(raw_name,'UNKNOWN'), '_', COALESCE(raw_phone,'NO_PHONE'))
-END AS customer_account_id*
+END AS customer_account_id
+```
 ---
 ## 2. Operational Intelligence (Advisor Performance)
 Instead of just counting tickets, I built an Efficiency & Outlier Detection model (fct_advisor_performance).
